@@ -48,14 +48,7 @@ class PanierController extends AbstractController
 
         $em->flush();
 
-        return $this->redirectToRoute('app_panier');
-    }
-
-    #[Route('/supprimer/{id}', name: 'panier_supprimer')]
-    public function supprimer(CartItem $item, EntityManagerInterface $em): RedirectResponse
-    {
-        $em->remove($item);
-        $em->flush();
+        $this->addFlash('success', 'Produit ajouté au panier.');
 
         return $this->redirectToRoute('app_panier');
     }
@@ -63,15 +56,53 @@ class PanierController extends AbstractController
     #[Route('/modifier/{id}', name: 'panier_modifier', methods: ['POST'])]
     public function modifier(Request $request, CartItem $item, EntityManagerInterface $em): RedirectResponse
     {
-        $quantite = (int) $request->request->get('quantite');
+        if ($item->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Accès refusé.');
+        }
+
+        $quantite = (int) $request->request->get('quantite', 1);
 
         if ($quantite > 0) {
             $item->setQuantite($quantite);
             $em->flush();
+            $this->addFlash('success', 'Quantité mise à jour.');
         } else {
             $em->remove($item);
             $em->flush();
+            $this->addFlash('success', 'Produit supprimé du panier.');
         }
+
+        return $this->redirectToRoute('app_panier');
+    }
+
+    #[Route('/supprimer/{id}', name: 'panier_supprimer', methods: ['POST'])]
+    public function supprimer(CartItem $item, EntityManagerInterface $em): RedirectResponse
+    {
+        if ($item->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Accès refusé.');
+        }
+
+        $em->remove($item);
+        $em->flush();
+
+        $this->addFlash('success', 'Produit supprimé du panier.');
+
+        return $this->redirectToRoute('app_panier');
+    }
+
+    #[Route('/vider', name: 'panier_vider', methods: ['POST'])]
+    public function vider(CartItemRepository $cartItemRepository, EntityManagerInterface $em): RedirectResponse
+    {
+        $user = $this->getUser();
+        $items = $cartItemRepository->findBy(['user' => $user]);
+
+        foreach ($items as $item) {
+            $em->remove($item);
+        }
+
+        $em->flush();
+
+        $this->addFlash('success', 'Panier vidé.');
 
         return $this->redirectToRoute('app_panier');
     }
