@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Mon Panier</h1>
+
+        {% if items is empty %}
+            <div class="alert alert-info">Votre panier est vide.</div>
+        {% else %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Quantité</th>
+                        <th>Prix Unitaire</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set total = 0 %}
+                    {% for item in items %}
+                        <tr>
+                            <td>{{ item.produit.nom }}</td>
+                            <td>
+                                <form action="{{ path('panier_modifier', {'id': item.id}) }}" method="post" class="d-flex align-items-center gap-2">
+                                    <input type="number" name="quantite" value="{{ item.quantite }}" min="1" class="form-control form-control-sm" style="width: 70px;">
+                                    <button type="submit" class="btn btn-success btn-sm">Modifier</button>
+                                </form>
+                            </td>
+                            <td>{{ item.produit.prix }} €</td>
+                            <td>
+                                {% set sous_total = item.produit.prix * item.quantite %}
+                                {{ sous_total }} €
+                                {% set total = total + sous_total %}
+                            </td>
+                            <td>
+                                <a href="{{ path('panier_supprimer', {'id': item.id}) }}" class="btn btn-danger btn-sm">Supprimer</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="text-end">
+                <h4>Total : {{ total }} €</h4>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
