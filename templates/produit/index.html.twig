@@ -43,7 +43,7 @@
 
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <span class="h5 text-primary mb-0">{{ produit.prix|number_format(2, ',', ' ') }} €</span>
+                                <span class="h5 text-primary mb-0">{{ produit.prix|number_format(2, ',', ' ') }} FCFA</span>
                                 <br>
                                 <span class="badge bg-{{ produit.stock <= 5 ? 'danger' : 'success' }}">Stock: {{ produit.stock }}</span>
                             </div>
@@ -51,11 +51,14 @@
                                 <a href="{{ path('app_produit_show', {'id': produit.id}) }}" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-eye"></i> Voir
                                 </a>
-                                {% if is_granted('ROLE_USER') %}
+
+                                {# Afficher le bouton "Ajouter au panier" uniquement pour les utilisateurs simples (pas admin) #}
+                                {% if is_granted('ROLE_USER') and not is_granted('ROLE_ADMIN') %}
                                     <a href="{{ path('panier_ajouter', {'id': produit.id}) }}" class="btn btn-sm btn-outline-success">
                                         <i class="bi bi-cart-plus"></i> Ajouter au panier
                                     </a>
                                 {% endif %}
+
                                 {% if is_granted('ROLE_ADMIN') %}
                                     <a href="{{ path('app_produit_edit', {'id': produit.id}) }}" class="btn btn-sm btn-outline-warning">
                                         <i class="bi bi-pencil"></i> Modifier
