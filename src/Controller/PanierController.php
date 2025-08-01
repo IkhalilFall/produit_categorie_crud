@@ -20,6 +20,11 @@ class PanierController extends AbstractController
     #[Route('/', name: 'app_panier')]
     public function index(CartItemRepository $cartItemRepository): Response
     {
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Accès refusé au panier pour les administrateurs.');
+            return $this->redirectToRoute('app_produit_index');
+        }
+
         $user = $this->getUser();
         $items = $cartItemRepository->findBy(['user' => $user]);
 
@@ -31,6 +36,11 @@ class PanierController extends AbstractController
     #[Route('/ajouter/{id}', name: 'panier_ajouter')]
     public function ajouter(Produit $produit, EntityManagerInterface $em): RedirectResponse
     {
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Les administrateurs ne peuvent pas ajouter de produits au panier.');
+            return $this->redirectToRoute('app_produit_index');
+        }
+
         $user = $this->getUser();
         $repo = $em->getRepository(CartItem::class);
 
@@ -56,6 +66,11 @@ class PanierController extends AbstractController
     #[Route('/modifier/{id}', name: 'panier_modifier', methods: ['POST'])]
     public function modifier(Request $request, CartItem $item, EntityManagerInterface $em): RedirectResponse
     {
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Accès refusé.');
+            return $this->redirectToRoute('app_produit_index');
+        }
+
         if ($item->getUser() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Accès refusé.');
         }
@@ -78,6 +93,11 @@ class PanierController extends AbstractController
     #[Route('/supprimer/{id}', name: 'panier_supprimer', methods: ['POST'])]
     public function supprimer(CartItem $item, EntityManagerInterface $em): RedirectResponse
     {
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Accès refusé.');
+            return $this->redirectToRoute('app_produit_index');
+        }
+
         if ($item->getUser() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Accès refusé.');
         }
@@ -93,6 +113,11 @@ class PanierController extends AbstractController
     #[Route('/vider', name: 'panier_vider', methods: ['POST'])]
     public function vider(CartItemRepository $cartItemRepository, EntityManagerInterface $em): RedirectResponse
     {
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Accès refusé.');
+            return $this->redirectToRoute('app_produit_index');
+        }
+
         $user = $this->getUser();
         $items = $cartItemRepository->findBy(['user' => $user]);
 
