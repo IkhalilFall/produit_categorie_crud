@@ -38,7 +38,7 @@ class ProduitType extends AbstractType
             ])
             ->add('prix', MoneyType::class, [
                 'label' => 'Prix',
-                'currency' => 'EUR',
+                'currency' => 'FCFA',
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => '0.00'

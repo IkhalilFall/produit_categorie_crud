@@ -41,10 +41,10 @@
                                 <button type="submit" class="btn btn-primary btn-sm">Modifier</button>
                             </form>
                         </td>
-                        <td>{{ item.produit.prix|number_format(2, ',', ' ') }} €</td>
+                        <td>{{ item.produit.prix|number_format(2, ',', ' ') }} FCFA</td>
                         <td>
                             {% set sous_total = item.produit.prix * item.quantite %}
-                            {{ sous_total|number_format(2, ',', ' ') }} €
+                            {{ sous_total|number_format(2, ',', ' ') }} FCFA
                             {% set total = total + sous_total %}
                         </td>
                         <td>
@@ -60,7 +60,7 @@
         </table>
 
         <div class="text-end">
-            <h4>Total : {{ total|number_format(2, ',', ' ') }} €</h4>
+            <h4>Total : {{ total|number_format(2, ',', ' ') }} FCFA</h4>
 
             <form action="{{ path('panier_vider') }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir vider le panier ?');" class="d-inline">
                 <button type="submit" class="btn btn-outline-danger mt-2">
